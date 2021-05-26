@@ -5,17 +5,37 @@ import assertk.assertThat
 import assertk.assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.xpathqs.SomeClass
+import org.xpathqs.TestLog
+import org.xpathqs.log.abstracts.ILogRestrictions
 import org.xpathqs.log.message.NullMessage
-import org.xpathqs.log.printers.NoLogPrinter
+import org.xpathqs.log.printers.StreamLogPrinter
+import org.xpathqs.log.printers.args.NoArgsProcessor
+import org.xpathqs.log.printers.args.TimeArgsProcessor
+import org.xpathqs.log.printers.body.BodyProcessorImpl
+import org.xpathqs.log.printers.body.HierarchyBodyProcessor
+import org.xpathqs.log.restrictions.NoRestrictions
+import org.xpathqs.log.restrictions.source.ForAllSource
+import org.xpathqs.log.restrictions.value.IncludeTags
+import org.xpathqs.log.restrictions.RestrictionRule
+import org.xpathqs.log.restrictions.source.ExcludePackage
+import org.xpathqs.log.restrictions.source.IncludePackage
+import org.xpathqs.log.restrictions.value.LogLevelLessThan
+import org.xpathqs.log.restrictions.value.NoRestrictValues
+import java.io.ByteArrayOutputStream
+import java.io.OutputStream
+import java.io.PrintStream
 
 
 internal class TcLoggerTest {
 
     var log = TcLogger()
+    var baos = ByteArrayOutputStream()
 
     @BeforeEach
     fun beforeEach() {
         log = TcLogger()
+        baos = ByteArrayOutputStream()
     }
 
     @Test
@@ -37,6 +57,8 @@ internal class TcLoggerTest {
 
     @Test
     fun addMsg() {
+        val log = TcLogger()
+
         log.info("test")
 
         val msgs = log.root.messages
@@ -47,9 +69,6 @@ internal class TcLoggerTest {
             val msg = msgs.first()
             assertThat(msg.body)
                 .isEqualTo("test")
-
-            assertThat(msg.attributes)
-                .hasSize(4)
         }
     }
 
@@ -84,13 +103,11 @@ internal class TcLoggerTest {
         val msgs = log.root.messages
         assertThat(msgs)
             .hasSize(2)
-
     }
 
     @Test
     fun test1() {
-        var log = TcLogger()
-
+        var log = getLog()
         log.action("test") {
             log.action("test1") {
                 log.info("hellow_1_1")
@@ -113,5 +130,137 @@ internal class TcLoggerTest {
         }
 
         log.root
+    }
+
+    @Test
+    fun restrictionIncludeTagForAll() {
+        var log = getLog(
+            RestrictionRule(
+                ForAllSource(),
+                IncludeTags( "debug")
+            )
+        )
+
+        log.info("test1")
+        log.info("test2")
+        log.debug("test3")
+        log.trace("test4")
+
+        assertThat(baos.toString())
+            .isEqualTo(" test3\n")
+    }
+
+    @Test
+    fun restrictionLogLevel() {
+        var log = getLog(
+            RestrictionRule(
+                ForAllSource(),
+                LogLevelLessThan(1)
+            )
+        )
+
+        log.action("test1") {
+            log.info("test2")
+        }
+
+        println(baos.toString())
+
+        assertThat(baos.toString())
+            .isEqualTo(" test1\n")
+    }
+
+    @Test
+    fun hierarchyOut() {
+        var log = getLog()
+
+        log.info("test1")
+        log.action("test2") {
+            log.trace("test3")
+        }
+
+        println(baos)
+
+        assertThat(baos.toString())
+            .isEqualTo(
+                " test1\n" +
+                      " test2\n" +
+                      "     test3\n"
+            )
+    }
+
+    @Test
+    fun restrictionIncludeTwoTagForAll() {
+        var log = getLog(
+            RestrictionRule(
+                ForAllSource(),
+                IncludeTags( "debug", "trace")
+            )
+        )
+
+        log.info("test1")
+        log.info("test2")
+        log.debug("test3")
+        log.trace("test4")
+
+        assertThat(baos.toString())
+            .isEqualTo(" test3\n test4\n")
+    }
+
+    @Test
+    fun restrictionIncludeTestPackage() {
+        getLog(
+            RestrictionRule(
+                IncludePackage("org.xpathqs.log"),
+                NoRestrictValues()
+            )
+        )
+
+        TestLog.debug("test 1")
+        TestLog.info("test 2")
+
+        val cls = SomeClass()
+        cls.someLog1()
+        cls.someLog2()
+
+        assertThat(baos.toString())
+            .isEqualTo(" test 1\n test 2\n")
+    }
+
+    @Test
+    fun restrictionExcludeTestPackage() {
+        getLog(
+            RestrictionRule(
+                ExcludePackage("org.xpathqs.log"),
+                NoRestrictValues()
+            )
+        )
+
+        TestLog.debug("test 1")
+        TestLog.info("test 2")
+
+        val cls = SomeClass()
+        cls.someLog1()
+
+        assertThat(baos.toString())
+            .isEqualTo(" debug1\n trace2\n")
+    }
+
+    private fun getLog(
+        restrictions: ILogRestrictions = NoRestrictions()
+    ): TcLogger {
+        val res = TcLogger(
+            streamPrinter = StreamLogPrinter(
+                argsProcessor = NoArgsProcessor(),
+                bodyProcessor =
+                HierarchyBodyProcessor(
+                    BodyProcessorImpl()
+                ),
+                PrintStream(baos)
+            ),
+            restrictions = restrictions
+        )
+
+        TestLog.log = res
+        return res
     }
 }

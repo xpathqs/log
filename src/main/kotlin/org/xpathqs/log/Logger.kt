@@ -16,8 +16,8 @@ open class Logger(
     protected var curMessage: IMessage = root
 
     protected open fun log(msg: IMessage) {
+        curMessage.add(msg.bodyMessage)
         if(restrictions.canLog(msg)) {
-            curMessage.add(msg.bodyMessage)
             streamPrinter.onLog(msg)
         }
     }

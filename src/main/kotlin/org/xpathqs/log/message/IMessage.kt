@@ -14,3 +14,18 @@ interface IMessage {
     val bodyMessage: Message
     val messages: Collection<IMessage>
 }
+
+val IMessage.tag: String
+    get() {
+        return this.attributes["tag"] as String
+    }
+
+val IMessage.cls: String
+    get() {
+        return this.attributes["cls"] as String
+    }
+
+val IMessage.method: String
+    get() {
+        return this.attributes["method"] as String
+    }
