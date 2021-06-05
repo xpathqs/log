@@ -1,6 +1,6 @@
 
 group = "org.xpathqs"
-version = "0.0.1"
+version = "0.1.0"
 
 
 plugins {
@@ -63,13 +63,13 @@ publishing {
                     }
                 }
                 scm {
-                    connection.set("scm:git:git://github.com/nachg/xpathqs-log.git")
-                    developerConnection.set("scm:git:ssh://github.com/nachg/xpathqs-log.git")
+                    connection.set("scm:git:git://github.com/xpathqs/log.git")
+                    developerConnection.set("scm:git:ssh://github.com/xpathqs/log.git")
                     url.set("https://xpathqs.org/")
                 }
             }
             groupId = "org.xpathqs"
-            artifactId = "xpathqs-log"
+            artifactId = "log"
 
             from(components["java"])
         }
