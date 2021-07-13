@@ -48,13 +48,14 @@ class StyledLogTest {
                         TimeArgsProcessor(
                             NoArgsProcessor()
                         ),
-                        Style(textColor = 60)
+                        Style(textColor = 60, backgroundColor = 235)
                     ),
                 bodyProcessor =
                     StyledBodyProcessor(
                         HierarchyBodyProcessor(
                             BodyProcessorImpl()
                         ),
+                        default = Style(backgroundColor = 235),
                         level1 = Style(textColor = 48),
                         level2 = Style(textColor = 40),
                         level3 = Style(textColor = 35)

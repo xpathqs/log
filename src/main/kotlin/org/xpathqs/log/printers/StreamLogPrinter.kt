@@ -22,7 +22,7 @@ open class StreamLogPrinter(
 
     override fun onLog(msg: IMessage) {
         writer.println(
-            argsProcessor.processArgs(msg) + " " + bodyProcessor.processBody(msg)
+            argsProcessor.processArgs(msg) + bodyProcessor.processBody(msg)
         )
     }
 }

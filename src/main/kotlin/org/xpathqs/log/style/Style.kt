@@ -40,4 +40,13 @@ data class Style(
         attrs.addAll(attributes)
         return Ansi.colorize(source, *attrs.toTypedArray())
     }
+
+    operator fun plus(right: Style)
+        = Style(
+            textColor = right.textColor ?: textColor,
+            backgroundColor = right.backgroundColor ?: backgroundColor,
+            bold = right.bold,
+            italic = right.italic,
+            underline = right.underline
+        )
 }

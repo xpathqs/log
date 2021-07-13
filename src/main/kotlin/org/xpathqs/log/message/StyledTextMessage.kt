@@ -17,4 +17,10 @@ class StyledTextMessage(
         get() = msg.toString(stylesheet, defaultStyle)
 
     override fun toString() = msg.toString()
+
+    fun wrapString(str: String) = StyledTextMessage(
+        StyledString(str),
+        stylesheet,
+        defaultStyle
+    ).body
 }
