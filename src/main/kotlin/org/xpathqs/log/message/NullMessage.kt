@@ -2,7 +2,7 @@ package org.xpathqs.log.message
 
 class NullMessage(
     override val body: String="",
-    override val attributes: LogAttributes = emptyMap(),
+    override val attributes: LogAttributes = HashMap(),
     override val messages: Collection<IMessage> = emptyList()
 ) : IMessage {
     override fun open(newMessageThread: IMessage) {}

@@ -5,8 +5,10 @@ class TextMessage(
 ) : Message()
 {
     override val attributes: LogAttributes
-        get() = emptyMap()
+        get() = HashMap()
 
     override val body: String
         get() = msg
+
+    override fun toString() = body
 }

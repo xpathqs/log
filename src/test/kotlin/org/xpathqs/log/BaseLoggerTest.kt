@@ -11,7 +11,6 @@ import org.xpathqs.log.abstracts.ILogRestrictions
 import org.xpathqs.log.message.NullMessage
 import org.xpathqs.log.printers.StreamLogPrinter
 import org.xpathqs.log.printers.args.NoArgsProcessor
-import org.xpathqs.log.printers.args.TimeArgsProcessor
 import org.xpathqs.log.printers.body.BodyProcessorImpl
 import org.xpathqs.log.printers.body.HierarchyBodyProcessor
 import org.xpathqs.log.restrictions.NoRestrictions
@@ -23,18 +22,17 @@ import org.xpathqs.log.restrictions.source.IncludePackage
 import org.xpathqs.log.restrictions.value.LogLevelLessThan
 import org.xpathqs.log.restrictions.value.NoRestrictValues
 import java.io.ByteArrayOutputStream
-import java.io.OutputStream
 import java.io.PrintStream
 
 
-internal class TcLoggerTest {
+internal class BaseLoggerTest {
 
-    var log = TcLogger()
+    var log = BaseLogger()
     var baos = ByteArrayOutputStream()
 
     @BeforeEach
     fun beforeEach() {
-        log = TcLogger()
+        log = BaseLogger()
         baos = ByteArrayOutputStream()
     }
 
@@ -57,7 +55,7 @@ internal class TcLoggerTest {
 
     @Test
     fun addMsg() {
-        val log = TcLogger()
+        val log = BaseLogger()
 
         log.info("test")
 
@@ -129,6 +127,7 @@ internal class TcLoggerTest {
             log.debug("end of all")
         }
 
+        println(baos.toString())
         log.root
     }
 
@@ -136,7 +135,6 @@ internal class TcLoggerTest {
     fun restrictionIncludeTagForAll() {
         var log = getLog(
             RestrictionRule(
-                ForAllSource(),
                 IncludeTags( "debug")
             )
         )
@@ -154,7 +152,6 @@ internal class TcLoggerTest {
     fun restrictionLogLevel() {
         var log = getLog(
             RestrictionRule(
-                ForAllSource(),
                 LogLevelLessThan(1)
             )
         )
@@ -192,7 +189,6 @@ internal class TcLoggerTest {
     fun restrictionIncludeTwoTagForAll() {
         var log = getLog(
             RestrictionRule(
-                ForAllSource(),
                 IncludeTags( "debug", "trace")
             )
         )
@@ -210,8 +206,8 @@ internal class TcLoggerTest {
     fun restrictionIncludeTestPackage() {
         getLog(
             RestrictionRule(
-                IncludePackage("org.xpathqs.log"),
-                NoRestrictValues()
+                NoRestrictValues(),
+                IncludePackage("org.xpathqs.log")
             )
         )
 
@@ -230,8 +226,8 @@ internal class TcLoggerTest {
     fun restrictionExcludeTestPackage() {
         getLog(
             RestrictionRule(
-                ExcludePackage("org.xpathqs.log"),
-                NoRestrictValues()
+                NoRestrictValues(),
+                ExcludePackage("org.xpathqs.log")
             )
         )
 
@@ -247,17 +243,20 @@ internal class TcLoggerTest {
 
     private fun getLog(
         restrictions: ILogRestrictions = NoRestrictions()
-    ): TcLogger {
-        val res = TcLogger(
-            streamPrinter = StreamLogPrinter(
-                argsProcessor = NoArgsProcessor(),
-                bodyProcessor =
-                HierarchyBodyProcessor(
-                    BodyProcessorImpl()
+    ): BaseLogger {
+        val res = BaseLogger(
+            Logger(
+                streamPrinter = StreamLogPrinter(
+                    argsProcessor =
+                        NoArgsProcessor(),
+                    bodyProcessor =
+                        HierarchyBodyProcessor(
+                            BodyProcessorImpl()
+                        ),
+                    writer = PrintStream(baos)
                 ),
-                PrintStream(baos)
-            ),
-            restrictions = restrictions
+                restrictions = restrictions
+            )
         )
 
         TestLog.log = res

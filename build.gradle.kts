@@ -1,10 +1,10 @@
 
 group = "org.xpathqs"
-version = "0.1.0"
+version = "0.1.1"
 
 
 plugins {
-    kotlin("jvm") version "1.5.0"
+    kotlin("jvm") version "1.3.71"
     id("org.jetbrains.dokka") version "1.4.32"
     `java-library`
     jacoco
@@ -31,6 +31,7 @@ jacoco {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation("com.diogonunes:JColor:5.0.1")
 
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")

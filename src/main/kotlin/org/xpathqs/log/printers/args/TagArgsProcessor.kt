@@ -5,7 +5,7 @@ import org.xpathqs.log.message.IMessage
 
 class TagArgsProcessor(): IArgsProcessor {
     override fun processArgs(msg: IMessage): String {
-        val tag = msg.attributes.get("tag") as? String
-        return "[${tag?.uppercase()?.padEnd(6)}]"
+        val tag = msg.attributes["tag"] as? String
+        return "[${tag?.toUpperCase()?.padEnd(6)}]"
     }
 }

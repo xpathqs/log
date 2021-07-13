@@ -10,7 +10,7 @@ class TagMessage(
 ) : MessageDecorator(origin) {
 
     override val selfAttributes: LogAttributes
-        get() = mapOf(
+        get() = hashMapOf(
             "tag" to tag
         )
 }

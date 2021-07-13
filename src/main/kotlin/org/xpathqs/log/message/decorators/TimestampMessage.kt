@@ -10,5 +10,5 @@ class TimestampMessage(
     private var ts: Long = System.currentTimeMillis()
 
     override val selfAttributes: LogAttributes
-        get() = mapOf("timestamp" to ts)
+        get() = hashMapOf("timestamp" to ts)
 }

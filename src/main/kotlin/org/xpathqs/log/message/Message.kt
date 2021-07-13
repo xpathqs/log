@@ -1,8 +1,12 @@
 package org.xpathqs.log.message
 
+import java.util.*
+import kotlin.collections.ArrayList
+
 abstract class Message(
 ) : IMessage {
     var level: Int = 0
+    val uuid = UUID.randomUUID()
 
     protected var baseImp: IMessage = NullMessage()
     protected var parentImpl: IMessage = NullMessage()

@@ -1,5 +1,6 @@
 package org.xpathqs.log
 
+import org.xpathqs.log.abstracts.ILogCallback
 import org.xpathqs.log.abstracts.IStreamLog
 import org.xpathqs.log.abstracts.ILogRestrictions
 import org.xpathqs.log.message.BaseMessage
@@ -9,33 +10,24 @@ import org.xpathqs.log.restrictions.NoRestrictions
 
 open class Logger(
     protected val streamPrinter: IStreamLog = NoLogPrinter(),
-    protected val restrictions: ILogRestrictions = NoRestrictions()
+    protected val restrictions: ILogRestrictions = NoRestrictions(),
+    protected val notifiers: ArrayList<ILogCallback> = ArrayList()
 ) {
-
-    val root = BaseMessage()
-    protected var curMessage: IMessage = root
-
-    protected open fun log(msg: IMessage) {
-        curMessage.add(msg.bodyMessage)
-        if(restrictions.canLog(msg)) {
+    open fun log(msg: IMessage) {
+        val canLog = restrictions.canLog(msg)
+        notifiers.forEach { it.onLog(msg, canLog) }
+        if(canLog) {
             streamPrinter.onLog(msg)
         }
     }
 
-    protected fun <T> start(msg: IMessage, lambda: () -> T): T {
-        start(msg)
-        val res = lambda()
-        complete(msg)
-        return res
+    open fun addAttachment(value: String, type: String, data: Any) {}
+
+    open fun start(msg: IMessage) {
+        notifiers.forEach { it.onStart(msg) }
     }
 
-    protected fun start(msg: IMessage) {
-        log(msg)
-        curMessage.open(msg.bodyMessage)
-        curMessage = msg.bodyMessage
-    }
-
-    protected fun complete(msg: IMessage) {
-        curMessage = msg.bodyMessage.base
+    open fun complete(msg: IMessage) {
+        notifiers.forEach { it.onComplete(msg, restrictions.canLog(msg)) }
     }
 }

@@ -23,7 +23,7 @@ abstract class MessageDecorator(
         get() = bodyMessage.messages
 
     override val attributes: LogAttributes
-        get() = origin.attributes + selfAttributes
+        get() = (origin.attributes + selfAttributes) as LogAttributes
 
     override val body: String
         get() = bodyMessage.body

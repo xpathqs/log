@@ -1,11 +1,11 @@
 package org.xpathqs
 
-import org.xpathqs.log.TcLogger
+import org.xpathqs.log.BaseLogger
 import org.xpathqs.log.annotations.LoggerBridge
 
 @LoggerBridge
 object TestLog {
-    var log: TcLogger = TcLogger()
+    var log: BaseLogger = BaseLogger()
 
     fun info(msg: String) {
         log.info(msg)

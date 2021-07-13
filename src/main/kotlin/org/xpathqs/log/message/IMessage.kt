@@ -1,6 +1,6 @@
 package org.xpathqs.log.message
 
-typealias LogAttributes = Map<String, Any>
+typealias LogAttributes = MutableMap<String, Any>
 
 interface IMessage {
     fun open(newMessageThread: IMessage)

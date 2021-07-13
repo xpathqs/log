@@ -11,7 +11,7 @@ class ClassMethodMessage(
 ) : MessageDecorator(origin) {
 
     override val selfAttributes: LogAttributes
-        get() = mapOf(
+        get() = hashMapOf(
             "cls" to cls,
             "method" to method
         )
