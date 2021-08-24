@@ -47,6 +47,17 @@ open class BaseLogger(
         )
     }
 
+    fun tag(msg: String, tag: String = "") = tag(StyledBlock(msg), tag)
+    fun tag(msg: StyledBlock, tag: String = "") = tag(StyledString(msg), tag)
+    fun tag(msg: StyledString, tag: String = "") {
+        log(
+            getTaggedMessage(
+                tag,
+                msg
+            )
+        )
+    }
+
     fun debug(msg: String) = debug(StyledBlock(msg))
     fun debug(msg: StyledBlock) = debug(StyledString(msg))
     fun debug(msg: StyledString) {
@@ -97,6 +108,17 @@ open class BaseLogger(
         log(
             getTaggedMessage(
                 "always",
+                msg
+            )
+        )
+    }
+
+    fun warning(msg: String) = warning(StyledBlock(msg))
+    fun warning(msg: StyledBlock) = warning(StyledString(msg))
+    fun warning(msg: StyledString) {
+        log(
+            getTaggedMessage(
+                "warning",
                 msg
             )
         )

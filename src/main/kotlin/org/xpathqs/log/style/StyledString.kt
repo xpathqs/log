@@ -75,6 +75,9 @@ class StyledString(
             this[StyleFactory.XPATH] = Style(textColor = 241)
             this[StyleFactory.ARG] = Style(textColor = 202)
             this[StyleFactory.TEST_TITLE] = Style(textColor = 117, backgroundColor = 60)
+            this[StyleFactory.RESULT] = Style(textColor = 48, backgroundColor = 25)
+            this[StyleFactory.WARNING] = Style(textColor = 214)
+            this[StyleFactory.ERROR] = Style(textColor = 197)
         }
 
         fun fromFormatString(str: String, style: String, vararg args: String) =

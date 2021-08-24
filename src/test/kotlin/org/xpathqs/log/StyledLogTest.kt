@@ -14,9 +14,12 @@ import org.xpathqs.log.printers.body.BodyProcessorImpl
 import org.xpathqs.log.printers.body.HierarchyBodyProcessor
 import org.xpathqs.log.printers.body.StyledBodyProcessor
 import org.xpathqs.log.style.*
+import org.xpathqs.log.style.StyleFactory.error
 import org.xpathqs.log.style.StyleFactory.keyword
+import org.xpathqs.log.style.StyleFactory.result
 import org.xpathqs.log.style.StyleFactory.selectorName
 import org.xpathqs.log.style.StyleFactory.text
+import org.xpathqs.log.style.StyleFactory.warning
 import org.xpathqs.log.style.StyleFactory.xpath
 import org.xpathqs.log.style.StyledString.Companion.defaultStyles
 import java.io.PrintStream
@@ -93,6 +96,25 @@ class StyledLogTest {
                 "Form.s2"
             ).toString(defaultStyles, Style(textColor = 100))
         )
+    }
+
+    @Test
+    fun result() {
+        val str = text("Cache ") + xpath("//div ") + result("true")
+        println(str.toString(defaultStyles))
+    }
+
+    @Test
+    fun error() {
+        val str = text("Cache ") + error("error")
+        println(str.toString(defaultStyles))
+    }
+
+
+    @Test
+    fun warning() {
+        val str = text("Cache ") + warning("warning")
+        println(str.toString(defaultStyles))
     }
 
     @Test

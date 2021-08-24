@@ -6,6 +6,9 @@ object StyleFactory {
     const val KEYWORD = "keyword"
     const val ARG = "arg"
     const val TEST_TITLE = "test_title"
+    const val ERROR = "error"
+    const val WARNING = "warning"
+    const val RESULT = "result"
 
     fun selectorName(s: String): StyledBlock
         = StyledBlock(s, SELECTOR_NAME)
@@ -24,4 +27,13 @@ object StyleFactory {
 
     fun testTitle(s: String): StyledBlock
             = StyledBlock(s, TEST_TITLE)
+
+    fun error(s: String): StyledBlock
+            = StyledBlock(s, ERROR)
+
+    fun warning(s: String): StyledBlock
+            = StyledBlock(s, WARNING)
+
+    fun result(s: String): StyledBlock
+            = StyledBlock(s, RESULT)
 }
