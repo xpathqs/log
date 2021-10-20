@@ -4,6 +4,7 @@ import org.xpathqs.log.annotations.LoggerBridge
 import org.xpathqs.log.message.MessageDecorator
 import org.xpathqs.log.message.StyledTextMessage
 import org.xpathqs.log.message.TextMessage
+import org.xpathqs.log.message.decorators.AttachmentMessage
 import org.xpathqs.log.message.decorators.ClassMethodMessage
 import org.xpathqs.log.message.decorators.TagMessage
 import org.xpathqs.log.message.decorators.TimestampMessage
@@ -44,6 +45,19 @@ open class BaseLogger(
                 msg
             ),
             lambda
+        )
+    }
+
+    fun attachment(data: Array<Byte>, msg: String, tag: String) = attachment(data, StyledBlock(msg), tag)
+    fun attachment(data: Array<Byte>, msg: StyledBlock, tag: String) = attachment(data, StyledString(msg), tag)
+    fun attachment(data: Array<Byte>, msg: StyledString, tag: String) {
+        log(
+            AttachmentMessage(
+                data, getTaggedMessage(
+                    tag,
+                    msg
+                )
+            )
         )
     }
 
