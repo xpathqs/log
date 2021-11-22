@@ -23,10 +23,11 @@ class MultipleLogTest {
                 StreamLogPrinter(
                     writer = PrintStream(baos2)
                 ),
-            restrictions =
+            restrictions = listOf(
                 RestrictionRule(
                     IncludeTags( "debug")
                 )
+            )
         )
         var log = BaseLogger(
             arrayListOf(log1, log2)

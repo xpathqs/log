@@ -144,7 +144,7 @@ internal class BaseLoggerTest {
         log.debug("test3")
         log.trace("test4")
 
-        assertThat(baos.toString())
+        assertThat(getOutput())
             .isEqualTo(" test3\n")
     }
 
@@ -162,7 +162,7 @@ internal class BaseLoggerTest {
 
         println(baos.toString())
 
-        assertThat(baos.toString())
+        assertThat(getOutput())
             .isEqualTo(" test1\n")
     }
 
@@ -177,7 +177,7 @@ internal class BaseLoggerTest {
 
         println(baos)
 
-        assertThat(baos.toString())
+        assertThat(getOutput())
             .isEqualTo(
                 " test1\n" +
                       " test2\n" +
@@ -198,8 +198,14 @@ internal class BaseLoggerTest {
         log.debug("test3")
         log.trace("test4")
 
-        assertThat(baos.toString())
+        assertThat(getOutput())
             .isEqualTo(" test3\n test4\n")
+    }
+
+    private fun getOutput(): String {
+        return baos.toString().split("\n").map {
+            it.trimEnd()
+        }.joinToString("\n")
     }
 
     @Test
@@ -218,7 +224,7 @@ internal class BaseLoggerTest {
         cls.someLog1()
         cls.someLog2()
 
-        assertThat(baos.toString())
+        assertThat(getOutput())
             .isEqualTo(" test 1\n test 2\n")
     }
 
@@ -237,7 +243,7 @@ internal class BaseLoggerTest {
         val cls = SomeClass()
         cls.someLog1()
 
-        assertThat(baos.toString())
+        assertThat(getOutput())
             .isEqualTo(" debug1\n trace2\n")
     }
 
@@ -255,7 +261,7 @@ internal class BaseLoggerTest {
                         ),
                     writer = PrintStream(baos)
                 ),
-                restrictions = restrictions
+                restrictions = listOf(restrictions)
             )
         )
 
