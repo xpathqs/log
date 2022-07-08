@@ -7,6 +7,8 @@ import org.xpathqs.log.message.BaseMessage
 import org.xpathqs.log.message.IMessage
 import org.xpathqs.log.printers.NoLogPrinter
 import org.xpathqs.log.restrictions.NoRestrictions
+import java.util.*
+import kotlin.collections.ArrayList
 
 open class Logger(
     protected val streamPrinter: IStreamLog = NoLogPrinter(),
@@ -19,12 +21,23 @@ open class Logger(
         notifiers: ArrayList<ILogCallback> = ArrayList()
     ) : this(streamPrinter, listOf(restriction), notifiers)
 
-    fun canLog(msg: IMessage): Boolean {
-        return restrictions.find { !it.canLog(msg) } == null
+    private fun canLog(msg: IMessage, dynamicRestrictions: Stack<Collection<ILogRestrictions>> = Stack()): Boolean {
+        return restrictions.find { !it.canLog(msg) } == null && checkDynamicRestriction(msg, dynamicRestrictions)
     }
 
-    open fun log(msg: IMessage) {
-        val canLog = canLog(msg)
+    fun checkDynamicRestriction(msg: IMessage, dynamicRestrictions: Stack<Collection<ILogRestrictions>>): Boolean {
+        dynamicRestrictions.forEach { restrictions ->
+            if(restrictions.none {
+                    it.canLog(msg)
+            }) {
+                return false
+            }
+        }
+        return true
+    }
+
+    open fun log(msg: IMessage, dynamicRestrictions: Stack<Collection<ILogRestrictions>> = Stack()) {
+        val canLog = canLog(msg, dynamicRestrictions)
         notifiers.forEach { it.onLog(msg, canLog) }
         if(canLog) {
             streamPrinter.onLog(msg)
@@ -38,6 +51,11 @@ open class Logger(
     }
 
     open fun complete(msg: IMessage) {
-        notifiers.forEach { it.onComplete(msg, canLog(msg)) }
+        notifiers.forEach {
+            it.onComplete(
+                msg,
+                canLog(msg)
+            )
+        }
     }
 }

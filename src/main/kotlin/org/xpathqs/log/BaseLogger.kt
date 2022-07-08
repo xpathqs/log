@@ -1,7 +1,9 @@
 package org.xpathqs.log
 
+import org.xpathqs.log.abstracts.ILogRestrictions
 import org.xpathqs.log.annotations.LoggerBridge
 import org.xpathqs.log.message.MessageDecorator
+import org.xpathqs.log.message.NullMessage
 import org.xpathqs.log.message.StyledTextMessage
 import org.xpathqs.log.message.TextMessage
 import org.xpathqs.log.message.decorators.AttachmentMessage
@@ -15,7 +17,6 @@ import org.xpathqs.log.printers.body.HierarchyBodyProcessor
 import org.xpathqs.log.style.StyledBlock
 import org.xpathqs.log.style.StyledString
 import org.xpathqs.log.style.Stylesheet
-import java.io.PrintStream
 
 open class BaseLogger(
     loggers: ArrayList<Logger>,
@@ -31,6 +32,37 @@ open class BaseLogger(
                 )
         )
     )): this(arrayListOf(log))
+
+    fun <T> step(msg: String, restrictions: Collection<ILogRestrictions> = emptyList(), lambda: () -> T)
+            = step(StyledString(msg), "step", restrictions, lambda)
+
+    fun <T> step(restrictions: Collection<ILogRestrictions> = emptyList(), lambda: () -> T): T {
+        return start(
+            NullMessage(),
+            lambda,
+            restrictions
+        )
+    }
+
+    fun <T> step(msg: StyledString, restrictions: Collection<ILogRestrictions> = emptyList(), lambda: () -> T)
+            = step(msg, "step", restrictions, lambda)
+
+    fun <T> step(msg: String, tag: String = "step", restrictions: Collection<ILogRestrictions> = emptyList(), lambda: () -> T)
+            = step(StyledString(msg), tag, restrictions, lambda)
+
+    fun <T> step(msg: StyledBlock, tag: String = "step", restrictions: Collection<ILogRestrictions> = emptyList(), lambda: () -> T)
+            = step(StyledString(msg), tag, restrictions, lambda)
+
+    fun <T> step(msg: StyledString, tag: String = "step", restrictions: Collection<ILogRestrictions> = emptyList(), lambda: () -> T): T {
+        return start(
+            getTaggedMessage(
+                tag,
+                msg
+            ),
+            lambda,
+            restrictions
+        )
+    }
 
     fun <T> action(msg: String, tag: String = "action", lambda: () -> T)
         = action(StyledString(msg), tag, lambda)
@@ -166,6 +198,7 @@ open class BaseLogger(
         var elem = findCallInitializer(elems.drop(1))
 
         return ClassMethodMessage(
+            elems,
             elem.className,
             elem.methodName,
             TextMessage(msg)
@@ -178,6 +211,7 @@ open class BaseLogger(
         var elem = findCallInitializer(elems.drop(1))
 
         return ClassMethodMessage(
+            elems,
             elem.className,
             elem.methodName,
             StyledTextMessage(msg, stylesheet)

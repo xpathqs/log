@@ -3,15 +3,16 @@ package org.xpathqs.log.restrictions
 import org.xpathqs.log.abstracts.ILogRestrictions
 import org.xpathqs.log.message.IMessage
 import org.xpathqs.log.restrictions.source.ForAllSource
+import org.xpathqs.log.restrictions.value.NoRestrictValues
 
-class RestrictionRule(
-    private val rule: IRestrictionValue,
+class RestrictionRuleSoft(
+    private val rule: IRestrictionValue = NoRestrictValues(),
     private val source: IRestrictionSource = ForAllSource()
 ) : ILogRestrictions {
     override fun canLog(msg: IMessage): Boolean {
-        if(source.isApplicable(msg)) {
-            return rule.isApplicable(msg)
+        if(rule.isApplicable(msg)) {
+            return source.isApplicable(msg)
         }
-        return false
+        return true
     }
 }

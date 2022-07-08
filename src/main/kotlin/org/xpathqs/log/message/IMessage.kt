@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package org.xpathqs.log.message
 
 typealias LogAttributes = MutableMap<String, Any>
@@ -23,6 +25,11 @@ val IMessage.tag: String
 val IMessage.cls: String
     get() {
         return this.attributes["cls"] as String
+    }
+
+val IMessage.stackTrace: Array<StackTraceElement>
+    get() {
+        return this.attributes["stackTrace"] as Array<StackTraceElement>
     }
 
 val IMessage.method: String

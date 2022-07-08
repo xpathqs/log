@@ -1,5 +1,6 @@
 package org.xpathqs.log.printers.body
 
+import org.xpathqs.log.Logger
 import org.xpathqs.log.abstracts.IBodyProcessor
 import org.xpathqs.log.message.IMessage
 import org.xpathqs.log.message.Message

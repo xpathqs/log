@@ -14,11 +14,13 @@ import org.xpathqs.log.printers.args.NoArgsProcessor
 import org.xpathqs.log.printers.body.BodyProcessorImpl
 import org.xpathqs.log.printers.body.HierarchyBodyProcessor
 import org.xpathqs.log.restrictions.NoRestrictions
-import org.xpathqs.log.restrictions.source.ForAllSource
 import org.xpathqs.log.restrictions.value.IncludeTags
-import org.xpathqs.log.restrictions.RestrictionRule
+import org.xpathqs.log.restrictions.RestrictionRuleHard
+import org.xpathqs.log.restrictions.source.ExcludeByRootMethodClsSimple
+import org.xpathqs.log.restrictions.source.ExcludeMethodClsSimple
 import org.xpathqs.log.restrictions.source.ExcludePackage
 import org.xpathqs.log.restrictions.source.IncludePackage
+import org.xpathqs.log.restrictions.value.ExcludeTags
 import org.xpathqs.log.restrictions.value.LogLevelLessThan
 import org.xpathqs.log.restrictions.value.NoRestrictValues
 import java.io.ByteArrayOutputStream
@@ -134,7 +136,7 @@ internal class BaseLoggerTest {
     @Test
     fun restrictionIncludeTagForAll() {
         var log = getLog(
-            RestrictionRule(
+            RestrictionRuleHard(
                 IncludeTags( "debug")
             )
         )
@@ -151,7 +153,7 @@ internal class BaseLoggerTest {
     @Test
     fun restrictionLogLevel() {
         var log = getLog(
-            RestrictionRule(
+            RestrictionRuleHard(
                 LogLevelLessThan(1)
             )
         )
@@ -188,7 +190,7 @@ internal class BaseLoggerTest {
     @Test
     fun restrictionIncludeTwoTagForAll() {
         var log = getLog(
-            RestrictionRule(
+            RestrictionRuleHard(
                 IncludeTags( "debug", "trace")
             )
         )
@@ -211,7 +213,7 @@ internal class BaseLoggerTest {
     @Test
     fun restrictionIncludeTestPackage() {
         getLog(
-            RestrictionRule(
+            RestrictionRuleHard(
                 NoRestrictValues(),
                 IncludePackage("org.xpathqs.log")
             )
@@ -231,7 +233,7 @@ internal class BaseLoggerTest {
     @Test
     fun restrictionExcludeTestPackage() {
         getLog(
-            RestrictionRule(
+            RestrictionRuleHard(
                 NoRestrictValues(),
                 ExcludePackage("org.xpathqs.log")
             )
@@ -245,6 +247,85 @@ internal class BaseLoggerTest {
 
         assertThat(getOutput())
             .isEqualTo(" debug1\n trace2\n")
+    }
+
+    fun ttt2() {
+        ttt()
+    }
+
+    fun ttt() {
+        TestLog.info("ttt")
+    }
+
+    @Test
+    fun restrictionExcludeTestMethod() {
+        getLog(
+            RestrictionRuleHard(
+                NoRestrictValues(),
+                ExcludeMethodClsSimple(
+                    cls = "BaseLoggerTest",
+                    method = "ttt"
+                )
+            )
+        )
+
+        ttt()
+
+        TestLog.debug("test 1")
+        TestLog.info("test 2")
+
+        val cls = SomeClass()
+        cls.someLog1()
+
+        assertThat(getOutput())
+            .isEqualTo(" debug1\n trace2\n")
+    }
+
+    @Test
+    fun restrictionExcludeTestMethod2() {
+        getLog(
+            RestrictionRuleHard(
+                NoRestrictValues(),
+                ExcludeByRootMethodClsSimple(
+                    cls = "BaseLoggerTest",
+                    method = "ttt2"
+                )
+            )
+        )
+
+        ttt2()
+
+        TestLog.debug("test 1")
+        TestLog.info("test 2")
+
+        val cls = SomeClass()
+        cls.someLog1()
+
+        assertThat(getOutput())
+            .isEqualTo(" debug1\n trace2\n")
+    }
+
+    @Test
+    fun dynamicRestrictions() {
+        val log = getLog()
+        log.info("Some log")
+
+        log.step("asd", listOf(
+            RestrictionRuleHard(
+                rule = ExcludeTags("step")
+            )
+        )) {
+            log.info("asd1")
+            log.step("asd2") {
+                log.info("asd3")
+            }
+        }
+
+        println(
+            getOutput()
+        )
+       /* assertThat(getOutput())
+            .isEqualTo(" Some log\n")*/
     }
 
     private fun getLog(

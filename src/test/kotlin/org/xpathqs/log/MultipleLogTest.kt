@@ -2,7 +2,7 @@ package org.xpathqs.log
 
 import org.junit.jupiter.api.Test
 import org.xpathqs.log.printers.StreamLogPrinter
-import org.xpathqs.log.restrictions.RestrictionRule
+import org.xpathqs.log.restrictions.RestrictionRuleHard
 import org.xpathqs.log.restrictions.value.IncludeTags
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
@@ -24,7 +24,7 @@ class MultipleLogTest {
                     writer = PrintStream(baos2)
                 ),
             restrictions = listOf(
-                RestrictionRule(
+                RestrictionRuleHard(
                     IncludeTags( "debug")
                 )
             )
