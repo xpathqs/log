@@ -18,7 +18,7 @@ class HierarchyBodyProcessor(
 
     protected fun pad(str: String, msg: Message, length: Int): String {
         var result = ""
-        repeat(length - (msg.toString().length + msg.level * 4)) {
+        repeat(length - (msg.toString().length + (getLevel(msg)) * 4)) {
             result += " "
         }
         if(msg is StyledTextMessage) {
@@ -27,10 +27,23 @@ class HierarchyBodyProcessor(
         return str
     }
 
+    fun getLevel(msg: Message): Int {
+        val msg = msg.bodyMessage
+        return if(msg.parent.bodyMessage.wasOutOnConsole) {
+            msg.level
+        } else {
+            var parent = msg.parent.bodyMessage as? Message
+            while (parent?.wasOutOnConsole == false) {
+                parent = parent?.parent.bodyMessage
+            }
+            parent?.level ?: 0
+        }
+    }
+
     protected val Message.spaceString: String
         get()  {
             var result = " "
-            repeat(level) {
+            repeat(getLevel(this)) {
                 result += "    "
             }
             if(this is StyledTextMessage) {

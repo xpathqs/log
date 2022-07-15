@@ -5,6 +5,7 @@ import org.xpathqs.log.abstracts.IStreamLog
 import org.xpathqs.log.abstracts.ILogRestrictions
 import org.xpathqs.log.message.BaseMessage
 import org.xpathqs.log.message.IMessage
+import org.xpathqs.log.message.Message
 import org.xpathqs.log.printers.NoLogPrinter
 import org.xpathqs.log.restrictions.NoRestrictions
 import java.util.*
@@ -21,7 +22,7 @@ open class Logger(
         notifiers: ArrayList<ILogCallback> = ArrayList()
     ) : this(streamPrinter, listOf(restriction), notifiers)
 
-    private fun canLog(msg: IMessage, dynamicRestrictions: Stack<Collection<ILogRestrictions>> = Stack()): Boolean {
+    fun canLog(msg: IMessage, dynamicRestrictions: Stack<Collection<ILogRestrictions>> = Stack()): Boolean {
         return restrictions.find { !it.canLog(msg) } == null && checkDynamicRestriction(msg, dynamicRestrictions)
     }
 
@@ -41,6 +42,10 @@ open class Logger(
         notifiers.forEach { it.onLog(msg, canLog) }
         if(canLog) {
             streamPrinter.onLog(msg)
+        } else {
+            if(this === MessageProcessor.consoleLog.get()) {
+                msg.bodyMessage.wasOutOnConsole = false
+            }
         }
     }
 

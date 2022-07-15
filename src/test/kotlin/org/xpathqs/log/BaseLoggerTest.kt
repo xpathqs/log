@@ -308,6 +308,7 @@ internal class BaseLoggerTest {
     @Test
     fun dynamicRestrictions() {
         val log = getLog()
+        MessageProcessor.consoleLog.set(TestLog.logger)
         log.info("Some log")
 
         log.step("asd", listOf(
@@ -321,32 +322,35 @@ internal class BaseLoggerTest {
             }
         }
 
-        println(
-            getOutput()
-        )
-       /* assertThat(getOutput())
-            .isEqualTo(" Some log\n")*/
+        assertThat(getOutput())
+            .isEqualTo(" Some log\n" +
+                    " asd\n" +
+                    "     asd1\n" +
+                    "     asd3\n")
     }
 
     private fun getLog(
         restrictions: ILogRestrictions = NoRestrictions()
     ): BaseLogger {
-        val res = BaseLogger(
-            Logger(
-                streamPrinter = StreamLogPrinter(
-                    argsProcessor =
-                        NoArgsProcessor(),
-                    bodyProcessor =
-                        HierarchyBodyProcessor(
-                            BodyProcessorImpl()
-                        ),
-                    writer = PrintStream(baos)
+        val logger = Logger(
+            streamPrinter = StreamLogPrinter(
+                argsProcessor =
+                NoArgsProcessor(),
+                bodyProcessor =
+                HierarchyBodyProcessor(
+                    BodyProcessorImpl()
                 ),
-                restrictions = listOf(restrictions)
-            )
+                writer = PrintStream(baos)
+            ),
+            restrictions = listOf(restrictions)
+        )
+        val res = BaseLogger(
+            logger
         )
 
         TestLog.log = res
+        TestLog.logger = logger
+
         return res
     }
 }

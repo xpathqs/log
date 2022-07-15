@@ -11,9 +11,6 @@ class NullMessage(
     override val parent: IMessage
         get() = NullMessage()
 
-    override val base: IMessage
-        get() = NullMessage()
-
     override val bodyMessage: Message
         get() = TextMessage("")
 }

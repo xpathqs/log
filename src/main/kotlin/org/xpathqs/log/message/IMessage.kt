@@ -9,7 +9,7 @@ interface IMessage {
     fun add(msg: IMessage)
 
     val parent: IMessage
-    val base: IMessage
+   // val base: IMessage
 
     val attributes: LogAttributes
     val body: String

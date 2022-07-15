@@ -6,14 +6,16 @@ import org.xpathqs.log.message.IMessage
 import org.xpathqs.log.message.NullMessage
 import java.util.Stack
 
+/**
+ [MessageProcessor] is a holder class of the loggers.
+ It is used to notify all loggers about log messages
+ */
 open class MessageProcessor(
     protected val loggers: ArrayList<Logger> = arrayListOf(Logger())
 ) {
-
     val root = BaseMessage()
-    protected var curMessage: IMessage = root
 
-    protected open fun log(msg: IMessage) {
+    open fun log(msg: IMessage) {
         curMessage.add(msg.bodyMessage)
         loggers.forEach {it.log(msg, resctrictionsStack)}
     }
@@ -21,10 +23,8 @@ open class MessageProcessor(
     open fun addAttachment(value: String, type: String, data: Any) {
     }
 
-    val resctrictionsStack = Stack<Collection<ILogRestrictions>>()
-
-    protected fun <T> start(msg: IMessage, lambda: () -> T, restrictions: Collection<ILogRestrictions> = emptyList()): T {
-        start(msg)
+    fun <T> start(msg: IMessage, lambda: () -> T, restrictions: Collection<ILogRestrictions> = emptyList()): T {
+        start(msg, restrictions)
 
         if(restrictions.isNotEmpty()) {
             resctrictionsStack.push(restrictions)
@@ -41,7 +41,7 @@ open class MessageProcessor(
         return res
     }
 
-    open fun start(msg: IMessage) {
+    private fun start(msg: IMessage, restrictions: Collection<ILogRestrictions> = emptyList()) {
         loggers.forEach {it.start(msg)}
         if(msg !is NullMessage) {
             log(msg)
@@ -50,8 +50,15 @@ open class MessageProcessor(
         curMessage = msg.bodyMessage
     }
 
-    open fun complete(msg: IMessage) {
-        curMessage = msg.bodyMessage.base
+    private fun complete(msg: IMessage) {
+        curMessage = msg.bodyMessage.parent
         loggers.forEach {it.complete(msg)}
+    }
+
+    protected var curMessage: IMessage = root
+    protected val resctrictionsStack = Stack<Collection<ILogRestrictions>>()
+
+    companion object {
+        var consoleLog = ThreadLocal<Logger>()
     }
 }

@@ -12,9 +12,6 @@ abstract class MessageDecorator(
     override val parent: IMessage
         get() = bodyMessage.parent
 
-    override val base: IMessage
-        get() = bodyMessage.base
-
     override fun add(msg: IMessage) {
         bodyMessage.add(msg)
     }
