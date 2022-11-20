@@ -7,7 +7,8 @@ import org.xpathqs.log.restrictions.value.NoRestrictValues
 
 class RestrictionRuleHard(
     private val rules: Collection<IRestrictionValue>,
-    private val source: IRestrictionSource
+    private val source: IRestrictionSource,
+    override var isEnabled: Boolean = true
 ) : ILogRestrictions {
 
     constructor(

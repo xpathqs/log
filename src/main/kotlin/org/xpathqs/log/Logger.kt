@@ -14,7 +14,8 @@ import kotlin.collections.ArrayList
 open class Logger(
     protected val streamPrinter: IStreamLog = NoLogPrinter(),
     protected val restrictions: Collection<ILogRestrictions> = emptyList(),
-    protected val notifiers: ArrayList<ILogCallback> = ArrayList()
+    protected val notifiers: ArrayList<ILogCallback> = ArrayList(),
+    val name: String = ""
 ) {
     constructor(
         streamPrinter: IStreamLog = NoLogPrinter(),
@@ -23,13 +24,16 @@ open class Logger(
     ) : this(streamPrinter, listOf(restriction), notifiers)
 
     fun canLog(msg: IMessage, dynamicRestrictions: Stack<Collection<ILogRestrictions>> = Stack()): Boolean {
-        return restrictions.find { !it.canLog(msg) } == null && checkDynamicRestriction(msg, dynamicRestrictions)
+        return restrictions.find { /*it.isEnabled &&*/ !it.canLog(msg) } == null && checkDynamicRestriction(msg, dynamicRestrictions)
     }
+
+    fun getRestriction(name: String)
+        = restrictions.find { it.name == name}
 
     fun checkDynamicRestriction(msg: IMessage, dynamicRestrictions: Stack<Collection<ILogRestrictions>>): Boolean {
         dynamicRestrictions.forEach { restrictions ->
             if(restrictions.none {
-                    it.canLog(msg)
+                    /*it.isEnabled &&*/ it.canLog(msg)
             }) {
                 return false
             }

@@ -7,7 +7,8 @@ import org.xpathqs.log.restrictions.value.NoRestrictValues
 
 class RestrictionRuleSoft(
     private val rule: IRestrictionValue = NoRestrictValues(),
-    private val source: IRestrictionSource = ForAllSource()
+    private val source: IRestrictionSource = ForAllSource(),
+    override var isEnabled: Boolean = true
 ) : ILogRestrictions {
     override fun canLog(msg: IMessage): Boolean {
         if(rule.isApplicable(msg)) {

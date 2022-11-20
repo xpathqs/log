@@ -246,4 +246,7 @@ open class BaseLogger(
                             || this.isAssignableFrom(MessageProcessor::class.java)
                        )
         }
+
+    fun getLogger(name: String)
+        = loggers.find { it.name == name }
 }
