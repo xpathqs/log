@@ -1,5 +1,5 @@
 group = "org.xpathqs"
-version = "0.1.3"
+version = "0.1.4"
 
 plugins {
     kotlin("jvm") version "1.3.71"
