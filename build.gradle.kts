@@ -1,8 +1,8 @@
 group = "org.xpathqs"
-version = "0.1.4"
+version = "0.1.6"
 
 plugins {
-    kotlin("jvm") version "1.3.71"
+    kotlin("jvm") version "1.6.0"
     id("org.jetbrains.dokka") version "1.4.32"
     `java-library`
     jacoco

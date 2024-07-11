@@ -1,11 +1,9 @@
 package org.xpathqs.log.printers.body
 
-import org.xpathqs.log.Logger
 import org.xpathqs.log.abstracts.IBodyProcessor
 import org.xpathqs.log.message.IMessage
 import org.xpathqs.log.message.Message
 import org.xpathqs.log.message.StyledTextMessage
-import org.xpathqs.log.style.StyledString
 
 class HierarchyBodyProcessor(
     origin: IBodyProcessor,
@@ -34,7 +32,7 @@ class HierarchyBodyProcessor(
         } else {
             var parent = msg.parent.bodyMessage as? Message
             while (parent?.wasOutOnConsole == false) {
-                parent = parent?.parent.bodyMessage
+                parent = parent?.parent?.bodyMessage
             }
             parent?.level ?: 0
         }
